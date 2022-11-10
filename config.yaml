@@ -1,0 +1,8 @@
+dataset-path-train: '/home/duyngu/Downloads/dataset_action_split/train.pkl'
+dataset-path-test: '/home/duyngu/Downloads/dataset_action_split/test.pkl'
+epochs: 50
+project: 'runs'
+batch-size: 128
+img-size: 64
+num-frame: 30
+

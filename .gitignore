@@ -1,0 +1,4 @@
+test.avi
+datasets/
+outputs_data
+yolov7/weight/yolov7-w6-pose.pt
