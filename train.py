@@ -18,18 +18,6 @@ import yaml
 from dataloader.dataset import processing_data
 import datetime
 
-# ************************* DATA FILES ***************************
-# Should be in format of
-#  inputs: (N_samples, time_steps, graph_node, channels),
-#  labels: (N_samples, num_class)
-#   and do some of normalizations on it. Default data create from:
-#       Data.create_dataset_(1-3).py
-# where
-#   time_steps: Number of frame input sequence, Default: 30
-#   graph_node: Number of node in skeleton, Default: 14
-#   channels: Inputs data (x, y and scores), Default: 3
-#   num_class: Number of pose class to train, Default: 7
-
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -62,17 +50,13 @@ del fts, lbs
 
 # ****************************************** NORMALIZE CLASS ****************************************************
 labels = np.concatenate(labels, axis=0)
-
-# id = ((labels == 0) | (labels == 6))
-# labels[id] = 0
-# id = ((labels == 2) | (labels == 3) | (labels == 4))
-# labels[id] = 2
-# id = (labels == 5)
-# labels[id] = 3
 features = np.concatenate(features, axis=0)  # 30x34
-# features = features[:, :, :, :2]
 # get 15 frame
 features = features[:, ::2, :, :]
+
+# add center point with yolov3
+features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
+
 features[:, :, :, :2] = processing_data(features[:, :, :, :2])
 x_train = features
 y_train = labels
@@ -88,16 +72,11 @@ with open(input_dataset_test, 'rb') as f:
 del fts, lbs
 # ****************************************** NORMALIZE CLASS ****************************************************
 labels = np.concatenate(labels, axis=0)
-# id = ((labels == 0) | (labels == 6))
-# labels[id] = 0
-# id = ((labels == 2) | (labels == 3) | (labels == 4))
-# labels[id] = 2
-# id = (labels == 5)
-# labels[id] = 3
 features = np.concatenate(features, axis=0)  # 30x34
-# features = features[:, :, :, :2]
 # get 15 frame
 features = features[:, ::2, :, :]
+features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
+
 features[:, :, :, :2] = processing_data(features[:, :, :, :2])
 x_valid = features
 y_valid = labels
@@ -153,10 +132,12 @@ classes_name = ['Sit down', 'Lying Down', 'Walking', 'Stand up', 'Standing', 'Fa
 print("Class name:", classes_name)
 
 # MODEL.
-graph_args = {'strategy': 'spatial'}
+# config 14 pose
+graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
+# config 17 pose
 model = TwoStreamSpatialTemporalGraph(graph_args, len(classes_name)).to(device)
 # optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-optimizer = Adadelta(model.parameters(), lr=1e-3)
+optimizer = Adadelta(model.parameters())
 losser = torch.nn.BCELoss()
 # losser = torch.nn.CrossEntropyLoss()
 

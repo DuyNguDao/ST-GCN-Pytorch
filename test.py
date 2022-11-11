@@ -11,23 +11,18 @@ from dataloader.dataset import processing_data
 
 
 def detect_image(path_test, path_model, batch_size=256):
-    """
-    function: detect face mask of folder image
-    :param path_image: path of folder contain image
-    :return: None
-    """
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # load model
     class_names = ['Sit down', 'Lying Down', 'Walking', 'Stand up', 'Standing', 'Fall Down', 'Sitting']
     # class_names = ['Other action', 'Fall Down']
     # class_names = ['Siting', 'Lying Down', 'Walking or Standing', 'Fall Down']
-    graph_args = {'strategy': 'spatial'}
+    graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
     model = TwoStreamSpatialTemporalGraph(graph_args, len(class_names)).to(device)
     model.load_state_dict(torch.load(path_model, map_location=device))
     model.to(device=device)
     model.eval()
 
-    # load dataset
     # Load dataset
     features, labels = [], []
     with open(path_test, 'rb') as f:
@@ -37,17 +32,14 @@ def detect_image(path_test, path_model, batch_size=256):
     del fts, lbs
 
     features = np.concatenate(features, axis=0)  # 30x34
-    # features = features[:, :, :, :2]
     # get 15 frame
     features = features[:, ::2, :, :]
+    # add point center with yolov3
+    features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)),
+                              axis=2)
     features[:, :, :, :2] = processing_data(features[:, :, :, :2])
     labels = np.concatenate(labels, axis=0).argmax(1)
-    # id = ((labels == 0) | (labels == 6))
-    # labels[id] = 0
-    # id = ((labels == 2) | (labels == 3) | (labels == 4))
-    # labels[id] = 2
-    # id = (labels == 5)
-    # labels[id] = 3
+
     print(" --------- Number class test ---------")
     for i in range(7):
         print(f"class {i}: {labels.tolist().count(i)}")
@@ -88,6 +80,6 @@ def detect_image(path_test, path_model, batch_size=256):
 
 
 if __name__ == '__main__':
-    path_model = 'runs/exp0/best_skip_7.pt'
-    path_frame = '/home/duyngu/Downloads/dataset_action_split/test.pkl'
-    detect_image(path_frame, path_model, batch_size=64)
+    path_model = 'runs/exp1/best.pt'
+    path_frame = '/home/duyngu/Downloads/dataset_action_split/test_yolov3_alphapose.pkl'
+    detect_image(path_frame, path_model, batch_size=128)
