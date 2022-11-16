@@ -1,8 +1,8 @@
-dataset-path-train: '/home/duyngu/Downloads/dataset_action_split/train_yolov3_alphapose.pkl'
-dataset-path-test: '/home/duyngu/Downloads/dataset_action_split/test_yolov3_alphapose.pkl'
+dataset-path-train: '/home/duyngu/Downloads/dataset_action_split/train_yolov7.pkl'
+dataset-path-test: '/home/duyngu/Downloads/dataset_action_split/test_yolov7.pkl'
 epochs: 50
 project: 'runs'
-batch-size: 128
+batch-size: 64
 img-size: 64
 num-frame: 30
 

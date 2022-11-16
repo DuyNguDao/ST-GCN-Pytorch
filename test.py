@@ -17,7 +17,8 @@ def detect_image(path_test, path_model, batch_size=256):
     class_names = ['Sit down', 'Lying Down', 'Walking', 'Stand up', 'Standing', 'Fall Down', 'Sitting']
     # class_names = ['Other action', 'Fall Down']
     # class_names = ['Siting', 'Lying Down', 'Walking or Standing', 'Fall Down']
-    graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
+    # graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
+    graph_args = {'strategy': 'spatial'}
     model = TwoStreamSpatialTemporalGraph(graph_args, len(class_names)).to(device)
     model.load_state_dict(torch.load(path_model, map_location=device))
     model.to(device=device)
@@ -35,8 +36,8 @@ def detect_image(path_test, path_model, batch_size=256):
     # get 15 frame
     features = features[:, ::2, :, :]
     # add point center with yolov3
-    features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)),
-                              axis=2)
+    # features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)),
+    #                           axis=2)
     features[:, :, :, :2] = processing_data(features[:, :, :, :2])
     labels = np.concatenate(labels, axis=0).argmax(1)
 
@@ -80,6 +81,6 @@ def detect_image(path_test, path_model, batch_size=256):
 
 
 if __name__ == '__main__':
-    path_model = 'runs/exp1/best.pt'
-    path_frame = '/home/duyngu/Downloads/dataset_action_split/test_yolov3_alphapose.pkl'
-    detect_image(path_frame, path_model, batch_size=128)
+    path_model = 'runs/exp1/best_skip.pt'
+    path_frame = '/home/duyngu/Downloads/dataset_action_split/test_yolov7.pkl'
+    detect_image(path_frame, path_model, batch_size=64)

@@ -55,7 +55,7 @@ features = np.concatenate(features, axis=0)  # 30x34
 features = features[:, ::2, :, :]
 
 # add center point with yolov3
-features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
+# features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
 
 features[:, :, :, :2] = processing_data(features[:, :, :, :2])
 x_train = features
@@ -75,7 +75,8 @@ labels = np.concatenate(labels, axis=0)
 features = np.concatenate(features, axis=0)  # 30x34
 # get 15 frame
 features = features[:, ::2, :, :]
-features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
+# features = np.concatenate((features, np.expand_dims((features[:, :, 1, :] + features[:, :, 1, :]) / 2, axis=2)), axis=2)
+
 
 features[:, :, :, :2] = processing_data(features[:, :, :, :2])
 x_valid = features
@@ -133,11 +134,12 @@ print("Class name:", classes_name)
 
 # MODEL.
 # config 14 pose
-graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
+# graph_args = {'strategy': 'spatial', 'layout': 'coco_cut'}
 # config 17 pose
+graph_args = {'strategy': 'spatial'}
 model = TwoStreamSpatialTemporalGraph(graph_args, len(classes_name)).to(device)
-# optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-optimizer = Adadelta(model.parameters())
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+# optimizer = Adadelta(model.parameters())
 losser = torch.nn.BCELoss()
 # losser = torch.nn.CrossEntropyLoss()
 
