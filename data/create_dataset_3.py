@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 
-class_names = ['Standing','Stand up', 'Sitting','Sit down','Lying Down','Walking','Fall Down']
+class_names = ['Sit down', 'Lying Down', 'Walking', 'Stand up', 'Standing', 'Fall Down', 'Sitting']
 # main_parts = ['nose_x','nose_y','nose_s','left_eye_x','_left_eye_y','left_eye_s','right_eye_x','right_eye_y','right_eye_s','left_ear_x','left_ear_y','left_ear_s','right_ear_x','right_ear_y','right_ear_s','left_shoulder_x','left_shoulder_y','left_shoulder_s','right_shoulder_x','right_shoulder_y','right_shoulder_s','left_elbow_x','left_elbow_y','left_elbow_s','right_elbow_x','right_elbow_y','right_elbow_s','left_wrist_x','left_wrist_y','left_wrist_s','right_wrist_x','right_wrist_y','right_wrist_s','left_hip_x','left_hip_y','left_hip_s','right_hip_x','right_hip_y','right_hip_s','left_knee_x','left_knee_y','left_knee_s','right_knee_x','right_knee_y','right_knee_s','left_ankle_x','left_ankle_y','left_ankle_s','right_ankle_x','right_ankle_y','right_ankle_s']
 # main_idx_parts = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,-1]  # 1.5
 
